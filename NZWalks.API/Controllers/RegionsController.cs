@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using NZWalks.API.Data;
 using NZWalks.API.Models.Domains;
 using NZWalks.API.Models.DTOs;
@@ -17,9 +18,9 @@ namespace NZWalks.API.Controllers
         }
         
         [HttpGet]
-        public IActionResult GetAll()
+        public async Task<IActionResult> GetAll()
         {
-            var regionsDomain = _dbContext.Regions.ToList();
+            var regionsDomain = await _dbContext.Regions.ToListAsync();
 
             // map domain models to DTos
             var regionsDto = new List<RegionDTo>();
@@ -42,10 +43,10 @@ namespace NZWalks.API.Controllers
         //GET: https://localhost:portNumber/api/regions/id
         [HttpGet]
         [Route("{id:Guid}")]
-        public IActionResult GetById([FromRoute] Guid id)
+        public async Task<IActionResult> GetById([FromRoute] Guid id)
         {
             //var region = _dbContext.Regions.Find(id);
-            var regionDomain = _dbContext.Regions.FirstOrDefault(r => r.Id == id);
+            var regionDomain = await _dbContext.Regions.FirstOrDefaultAsync(r => r.Id == id);
             if (regionDomain == null)
             {
                 return NotFound();
@@ -66,7 +67,7 @@ namespace NZWalks.API.Controllers
         // POST TO CREATE NEW REGION
         // POST: https://localhost:portnumber/api/regions
         [HttpPost]
-        public IActionResult Create([FromBody] AddRegionRequestDTo addRegionRequestDto)
+        public async Task<IActionResult> Create([FromBody] AddRegionRequestDTo addRegionRequestDto)
         {
             // map or convert dto to domain modal
             var regionDomainModal = new Region
@@ -77,8 +78,8 @@ namespace NZWalks.API.Controllers
             };
 
             // use domain modal to creare region
-            _dbContext.Regions.Add(regionDomainModal);
-            _dbContext.SaveChanges();
+           await _dbContext.Regions.AddAsync(regionDomainModal);
+           await  _dbContext.SaveChangesAsync();
 
             // map domain modal back to dto
             var regionDto = new RegionDTo
@@ -97,10 +98,10 @@ namespace NZWalks.API.Controllers
         //PUT: http://localhost:portnumber/api/regions/{id}
         [HttpPut]
         [Route("{id:Guid}")]
-        public IActionResult Update([FromRoute] Guid id, [FromBody] UpdateRegionRequestDTo updateRegionRequestD)
+        public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] UpdateRegionRequestDTo updateRegionRequestD)
         {
             // check if region exists
-            var regionDomainModal = _dbContext.Regions.FirstOrDefault(region => region.Id == id);
+            var regionDomainModal =await _dbContext.Regions.FirstOrDefaultAsync(region => region.Id == id);
 
             if (regionDomainModal == null)
             {
@@ -112,7 +113,7 @@ namespace NZWalks.API.Controllers
             regionDomainModal.Name = updateRegionRequestD.Name;
             regionDomainModal.RegionImageUrl = updateRegionRequestD.RegionImageUrl;
 
-            _dbContext.SaveChanges();
+            await _dbContext.SaveChangesAsync();
 
             // convert domain model to dto
             var regionDto = new RegionDTo
@@ -130,9 +131,29 @@ namespace NZWalks.API.Controllers
         // DELETE: https://localhost:portnumber/api/regions/{id}
         [HttpDelete]
         [Route("{id:Guid}")]
-        public IActionResult Delete([FromRoute] Guid id)
+        public async Task<IActionResult> Delete([FromRoute] Guid id)
         {
+            var regionDomainModal =await _dbContext.Regions.FirstOrDefaultAsync(_region => _region.Id == id);
+            if (regionDomainModal == null)
+            {
+                return NotFound();
+            }
 
+            // delete eregion
+           _dbContext.Regions.Remove(regionDomainModal);
+           await  _dbContext.SaveChangesAsync();
+
+
+            // convert domain model to dto
+            var regionDto = new RegionDTo
+            {
+                Id = regionDomainModal.Id,
+                Code = regionDomainModal.Code,
+                Name = regionDomainModal.Name,
+                RegionImageUrl = regionDomainModal.RegionImageUrl
+            };
+
+            return Ok(regionDto);
         }
     }
 }
