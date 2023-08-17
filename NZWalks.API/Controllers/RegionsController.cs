@@ -1,5 +1,7 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using NZWalks.API.Controllers.CustomActionFilters;
 using NZWalks.API.Data;
 using NZWalks.API.Models.Domains;
 using NZWalks.API.Models.DTOs;
@@ -9,6 +11,7 @@ namespace NZWalks.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class RegionsController : ControllerBase
     {
         private readonly NzWalksDbContext _dbContext;
@@ -54,33 +57,38 @@ namespace NZWalks.API.Controllers
         // POST TO CREATE NEW REGION
         // POST: https://localhost:portnumber/api/regions
         [HttpPost]
+        [ValidationModel]
         public async Task<IActionResult> Create([FromBody] AddRegionRequestDTo addRegionRequestDto)
         {
-            var regionDomainModal = _mapper.Map<Region>(addRegionRequestDto);
+                var regionDomainModal = _mapper.Map<Region>(addRegionRequestDto);
 
-            // use domain modal to create region
-           regionDomainModal = await _regionsRepository.CreateAsync(regionDomainModal);
+                // use domain modal to create region
+                regionDomainModal = await _regionsRepository.CreateAsync(regionDomainModal);
 
-            var regionDto = _mapper.Map<RegionDTo>(regionDomainModal);
-            return CreatedAtAction(nameof(GetById), new { id = regionDto.Id }, regionDto);
+                var regionDto = _mapper.Map<RegionDTo>(regionDomainModal);
+                return CreatedAtAction(nameof(GetById), new { id = regionDto.Id }, regionDto);
+           
+            
         }
 
         //UPDATE REGION
         //PUT: http://localhost:portnumber/api/regions/{id}
         [HttpPut]
         [Route("{id:Guid}")]
+        [ValidationModel]
         public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] UpdateRegionRequestDTo updateRegionRequestD)
         {
-            var regionDomainModal = _mapper.Map<Region>(updateRegionRequestD);
+                var regionDomainModal = _mapper.Map<Region>(updateRegionRequestD);
 
-            // check if region exists
-            regionDomainModal = await _regionsRepository.UpdateAsync(id, regionDomainModal);
+                // check if region exists
+                regionDomainModal = await _regionsRepository.UpdateAsync(id, regionDomainModal);
 
-            if (regionDomainModal == null)
-            {
-                return NotFound();   
-            }
-            return Ok(_mapper.Map<RegionDTo>(regionDomainModal));
+                if (regionDomainModal == null)
+                {
+                    return NotFound();
+                }
+                return Ok(_mapper.Map<RegionDTo>(regionDomainModal));
+         
         }
 
         //DELETE REGION
