@@ -20,6 +20,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<NzWalksDbContext>(options=>
     options.UseSqlServer(builder.Configuration.GetConnectionString("NZWalksConnectionString")));
 
+builder.Services.AddScoped<ITokenRepository, TokenRepository>();
 
 builder.Services.AddDbContext<NzWalksAuthDbContext>(options =>
 options.UseSqlServer(builder.Configuration.GetConnectionString("NZWalksAuthString")));
@@ -30,10 +31,21 @@ builder.Services.AddAutoMapper(typeof(AutoMapperProfiles));
 
 // identity
 builder.Services.AddIdentityCore<IdentityUser>()
-    .AddRoles<IdentityUser>()
+    .AddRoles<IdentityRole>()
     .AddTokenProvider<DataProtectorTokenProvider<IdentityUser>>("NzWalks")
     .AddEntityFrameworkStores<NzWalksAuthDbContext>()
     .AddDefaultTokenProviders();
+
+builder.Services.Configure<IdentityOptions>(
+    options =>
+   {
+       options.Password.RequireDigit = false;
+       options.Password.RequireLowercase = false;
+       options.Password.RequireNonAlphanumeric = false;
+       options.Password.RequireUppercase = false;
+       options.Password.RequiredLength = 6;
+       options.Password.RequiredUniqueChars = 1;
+   });
 
 // authentication
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
