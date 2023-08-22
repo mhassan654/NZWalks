@@ -1,4 +1,4 @@
-﻿using NZWalks.API.Models.Domains;
+﻿using NZWalks.API.Models.Domain;
 using System.ComponentModel.DataAnnotations;
 
 namespace NZWalks.API.Models.DTOs
