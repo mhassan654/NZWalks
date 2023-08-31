@@ -1,6 +1,6 @@
-﻿namespace NZWalks.API.Models.Domains
+﻿namespace NZWalks.API.Models.DTO
 {
-    public class Difficulty
+    public class DifficultyDTo
     {
         public Guid Id { get; set; }
         public string Name { get; set; }
