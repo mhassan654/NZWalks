@@ -1,12 +1,12 @@
-﻿using NZWalks.API.Models.Domain;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
+using NZWalks.API.Models.Domain;
 
-namespace NZWalks.API.Models.DTOs
+namespace NZWalks.API.Models.DTO
 {
-    public class UpdateWalkRequestDTo
+    public class AddWalkRequestDTo
     {
         [Required]
-        [MaxLength(100, ErrorMessage = "Name must have 100 maximum characters")]
+        [MaxLength(100,ErrorMessage = "Name must have 100 maximum characters")]
         public string Name { get; set; }
 
         [Required]
@@ -14,7 +14,7 @@ namespace NZWalks.API.Models.DTOs
         public string Description { get; set; }
 
         [Required]
-        [Range(0, 50)]
+        [Range(0,50)]
         public double LengthInKme { get; set; }
         public string? WalkImageUrl { get; set; }
 
