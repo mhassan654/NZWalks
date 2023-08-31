@@ -16,27 +16,33 @@ namespace NZWalks.API.Controllers
         private readonly NzWalksDbContext _dbContext;
         private readonly IRegionsRepository _regionsRepository;
         private readonly IMapper _mapper;
+        private readonly ILogger<RegionsController> _logger;
 
         public RegionsController(
             NzWalksDbContext dbContext,
             IRegionsRepository regionsRepository,
-            IMapper mapper
+            IMapper mapper,
+            ILogger<RegionsController> logger
             )
         {
             this._dbContext = dbContext;
             this._regionsRepository = regionsRepository;
             this._mapper = mapper;
+            _logger = logger;
         }
         
         [HttpGet]
-        [Authorize(Roles = "Reader")]
+        // [Authorize(Roles = "Reader")]
         public async Task<IActionResult> GetAll()
         {
-            var regionsDomain = await _regionsRepository.GetAllAsync();
+            
+                // Get Data From Database - Domain models
+            
+                var regionsDomain = await _regionsRepository.GetAllAsync();
 
-            var regionsDto = _mapper.Map<List<RegionDTo>>(regionsDomain);
+                var regionsDto = _mapper.Map<List<RegionDTo>>(regionsDomain);
 
-            return Ok(regionsDto);
+                return Ok(regionsDto);
         }
         
         // GET SINGLE REGION (Get Region by ID)
