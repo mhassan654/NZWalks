@@ -55,6 +55,8 @@ namespace NZWalks.API.Controllers
                pageNo,
                pageSize
                );
+           
+           
            // map domain model to dto
            return Ok(_mapper.Map<List<WalkDTo>>(walksDomainModel));
         }
